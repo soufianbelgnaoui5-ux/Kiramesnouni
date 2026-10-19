@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exposé Interactif : La Science du Sport & La Natation | Kawter Mesnouni</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti for Quiz -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            900: '#0c4a6e',
+                        },
+                        cyanAccent: '#06b6d4',
+                        emeraldAccent: '#10b981',
+                        violetAccent: '#8b5cf6'
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        heading: ['Space Grotesk', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Ambient & Glassmorphism Effects */
+        body {
+            background-color: #080f1e;
+            color: #f1f5f9;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(56, 189, 248, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px -10px rgba(14, 165, 233, 0.25);
+        }
+
+        .glow-bg {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.25;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Floating Animated Background Particles */
+        .bubble {
+            position: fixed;
+            bottom: -50px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.3) 0%, rgba(14, 165, 233, 0.05) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: floatUp 14s infinite linear;
+            z-index: 1;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0.8);
+                opacity: 0;
+            }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% {
+                transform: translateY(-110vh) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #080f1e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0ea5e9;
+        }
+
+        /* Reveal Animations */
+        .reveal-content {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.6s ease-out, opacity 0.5s ease-out, padding 0.4s ease;
+        }
+
+        .reveal-content.open {
+            max-height: 1200px;
+            opacity: 1;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gradient-text-gold {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Active tab indicator */
+        .tab-btn.active {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+        }
+
+        /* Anatomical Interactive Nodes */
+        .body-node {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .body-node:hover, .body-node.active {
+            transform: scale(1.15);
+            filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.8));
+        }
+    </style>
+</head>
+<body class="relative min-h-screen">
+
+    <!-- Background Glow Elements -->
+    <div class="glow-bg w-[500px] h-[500px] bg-brand-500 top-10 -left-40"></div>
+    <div class="glow-bg w-[600px] h-[600px] bg-purple-600 top-[40%] -right-40"></div>
+    <div class="glow-bg w-[500px] h-[500px] bg-cyan-500 bottom-10 left-1/3"></div>
+
+    <!-- Bubble Container -->
+    <div id="bubble-container"></div>
+
+    <!-- Floating Navigation Bar -->
+    <nav class="fixed top-4 left-1/2 -translate-x-1/2 w-[92%] max-w-6xl z-50 glass-panel rounded-2xl px-4 py-3 shadow-2xl flex items-center justify-between border border-white/10">
+        <a href="#hero" class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-cyanAccent flex items-center justify-center text-white shadow-lg shadow-brand-500/30">
+                <i class="fa-solid fa-person-swimming text-lg"></i>
+            </div>
+            <div>
+                <span class="font-heading font-bold text-lg text-white tracking-wide block leading-none">EXPOSÉ</span>
+                <span class="text-xs text-brand-400 font-medium">Science & Natation</span>
+            </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <div class="hidden lg:flex items-center gap-1 xl:gap-2 text-sm font-medium">
+            <a href="#definition" class="px-3 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition">Définition</a>
+            <a href="#evolution" class="px-3 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition">Évolution</a>
+            <a href="#types" class="px-3 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition">Types</a>
+            <a href="#natation" class="px-3 py-1.5 rounded-lg text-brand-400 hover:bg-brand-500/10 transition">La Natation</a>
+            <a href="#bienfaits" class="px-3 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition">Bienfaits</a>
+            <a href="#champions" class="px-3 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition">Légendes</a>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <a href="#quiz" class="px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-cyanAccent text-white font-semibold text-xs sm:text-sm shadow-md hover:opacity-90 transition flex items-center gap-2">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>Test & Quiz</span>
+            </a>
+            <!-- Mobile Menu Toggle -->
+            <button id="mobile-menu-btn" class="lg:hidden w-10 h-10 rounded-xl glass-card flex items-center justify-center text-gray-300">
+                <i class="fa-solid fa-bars text-lg"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-menu" class="hidden fixed inset-0 z-40 glass-panel bg-slate-950/95 flex flex-col justify-center items-center gap-6 text-xl font-semibold transition-all">
+        <a href="#definition" class="mobile-link text-gray-200 hover:text-brand-400">1. Définition du Sport</a>
+        <a href="#evolution" class="mobile-link text-gray-200 hover:text-brand-400">2. Évolution Historique</a>
+        <a href="#types" class="mobile-link text-gray-200 hover:text-brand-400">3. Les Types de Sport</a>
+        <a href="#natation" class="mobile-link text-brand-400 hover:text-white">4. Focus : La Natation</a>
+        <a href="#technique" class="mobile-link text-gray-200 hover:text-brand-400">5. Nages & Physiques</a>
+        <a href="#bienfaits" class="mobile-link text-gray-200 hover:text-brand-400">6. Bienfaits Anatomiques</a>
+        <a href="#champions" class="mobile-link text-gray-200 hover:text-brand-400">7. Champions & Légendes</a>
+        <a href="#quiz" class="mobile-link text-emerald-400 hover:text-emerald-300">8. Quiz Interactif</a>
+    </div>
+
+    <!-- MAIN CONTENT WRAPPER -->
+    <main class="relative z-10 pt-28 pb-20 space-y-28 max-w-6xl mx-auto px-4 sm:px-6">
+
+        <!-- HERO / HEADER SECTION -->
+        <section id="hero" class="min-h-[80vh] flex flex-col justify-center items-center text-center relative py-12">
+            <!-- Author Badge -->
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card border-brand-500/40 text-brand-300 mb-6 text-xs sm:text-sm font-semibold tracking-wide shadow-lg">
+                <i class="fa-solid fa-award text-amber-400"></i>
+                <span>Présenté & Réalisé par : <strong class="text-white font-bold">Kawter Mesnouni</strong></span>
+            </div>
+
+            <h1 class="font-heading text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight mb-6 leading-tight max-w-4xl">
+                La Science du Sport <br class="hidden sm:inline">
+                <span class="gradient-text">& L'Art de la Natation</span>
+            </h1>
+
+            <p class="text-gray-300 text-base sm:text-xl max-w-2xl font-light mb-10 leading-relaxed">
+                Une exploration interactive immersive sur l'évolution physique du corps humain, le passage de la survie à la performance, et la suprématie de la natation.
+            </p>
+
+            <!-- Hero Interactive Call to Actions -->
+            <div class="flex flex-wrap items-center justify-center gap-4">
+                <a href="#definition" class="px-8 py-4 rounded-2xl bg-gradient-to-r from-brand-500 via-brand-600 to-cyanAccent text-white font-bold shadow-xl shadow-brand-500/25 hover:shadow-brand-500/40 hover:scale-105 transition-all flex items-center gap-3 group">
+                    <span>Explorer l'Exposé</span>
+                    <i class="fa-solid fa-arrow-down group-hover:translate-y-1 transition-transform"></i>
+                </a>
+                <a href="#quiz" class="px-8 py-4 rounded-2xl glass-card text-white font-bold hover:bg-white/10 hover:scale-105 transition-all flex items-center gap-3 border border-white/20">
+                    <i class="fa-solid fa-circle-question text-cyan-400"></i>
+                    <span>Tester vos Connaissances</span>
+                </a>
+            </div>
+
+            <!-- Quick Stats Banner -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full mt-16 glass-panel rounded-2xl p-6 border border-white/10">
+                <div class="text-center border-r border-white/10 last:border-0">
+                    <div class="font-heading text-2xl sm:text-3xl font-extrabold text-brand-400">300k+</div>
+                    <div class="text-xs sm:text-sm text-gray-400">Années d'Évolution</div>
+                </div>
+                <div class="text-center border-r border-white/10 last:border-0">
+                    <div class="font-heading text-2xl sm:text-3xl font-extrabold text-cyan-400">100%</div>
+                    <div class="text-xs sm:text-sm text-gray-400">Muscles Sollicités (Natation)</div>
+                </div>
+                <div class="text-center border-r border-white/10 last:border-0">
+                    <div class="font-heading text-2xl sm:text-3xl font-extrabold text-indigo-400">4</div>
+                    <div class="text-xs sm:text-sm text-gray-400">Nages Officielles</div>
+                </div>
+                <div class="text-center">
+                    <div class="font-heading text-2xl sm:text-3xl font-extrabold text-emerald-400">0%</div>
+                    <div class="text-xs sm:text-sm text-gray-400">Choc Articulaire</div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SECTION 1: DÉFINITION DU SPORT -->
+        <section id="definition" class="scroll-mt-28">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="w-8 h-1 bg-brand-500 rounded-full"></span>
+                <span class="text-brand-400 font-semibold tracking-wider text-sm uppercase">Section 01</span>
+            </div>
+            <h2 class="font-heading text-3xl sm:text-4xl font-bold mb-6">1. Qu'est-ce que le Sport ?</h2>
+
+            <div class="grid md:grid-cols-2 gap-8 items-stretch">
+                <!-- Concept Card -->
+                <div class="glass-card rounded-3xl p-8 flex flex-col justify-between border-l-4 border-l-brand-500">
+                    <div>
+                        <div class="w-14 h-14 rounded-2xl bg-brand-500/20 text-brand-400 flex items-center justify-center text-2xl mb-6">
+                            <i class="fa-solid fa-dumbbell"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-3">Une Activité Physique & Codifiée</h3>
+                        <p class="text-gray-300 leading-relaxed mb-6">
+                            Le sport dépasse le simple exercice physique : c’est une activité réglementée qui combine effort corporel, stratégie mentale et quête d'accomplissement personnel ou collectif.
+                        </p>
+                    </div>
+
+                    <!-- Interactive Reveal Trigger -->
+                    <button onclick="toggleReveal('def-reveal')" class="w-full py-3 px-5 rounded-xl bg-brand-500/20 hover:bg-brand-500/30 text-brand-300 font-semibold text-sm transition flex items-center justify-between group">
+                        <span><i class="fa-solid fa-key mr-2"></i> Révéler les 3 piliers fondateurs</span>
+                        <i class="fa-solid fa-chevron-down group-hover:translate-y-0.5 transition-transform" id="def-reveal-icon"></i>
+                    </button>
+                </div>
+
+                <!-- Definition Details Container -->
+                <div class="glass-panel rounded-3xl p-8 flex flex-col justify-center relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl text-brand-300 pointer-events-none">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-4 text-cyan-300">Valeurs Universelles du Sport</h4>
+                    <p class="text-gray-300 text-sm mb-6 leading-relaxed">
+                        Le mot "Sport" provient de l'ancien français <em class="text-brand-400">"desport"</em> signifiant divertissement et plaisir. Aujourd'hui, il repose sur un équilibre physique et éthique.
+                    </p>
+
+                    <div id="def-reveal" class="reveal-content space-y-4">
+                        <div class="p-4 rounded-xl bg-white/5 border border-white/10 flex items-start gap-4">
+                            <div class="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 mt-1"><i class="fa-solid fa-heart-pulse"></i></div>
+                            <div>
+                                <h5 class="font-bold text-white text-sm">1. La Santé & La Performance</h5>
+                                <p class="text-xs text-gray-400">Développement des capacités cardiovasculaires, musculaires et endurance.</p>
+                            </div>
+                        </div>
+
+                        <div class="p-4 rounded-xl bg-white/5 border border-white/10 flex items-start gap-4">
+                            <div class="p-2 rounded-lg bg-amber-500/20 text-amber-400 mt-1"><i class="fa-solid fa-scale-balanced"></i></div>
+                            <div>
+                                <h5 class="font-bold text-white text-sm">2. Le Fair-Play & Les Règles</h5>
+                                <p class="text-xs text-gray-400">Respect de l'adversaire, égalité des chances et discipline éthique.</p>
+                            </div>
+                        </div>
+
+                        <div class="p-4 rounded-xl bg-white/5 border border-white/10 flex items-start gap-4">
+                            <div class="p-2 rounded-lg bg-purple-500/20 text-purple-400 mt-1"><i class="fa-solid fa-users"></i></div>
+                            <div>
+                                <h5 class="font-bold text-white text-sm">3. L'Inclusion Sociale</h5>
+                                <p class="text-xs text-gray-400">Vecteur d'union interculturelle et de cohésion sociale.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SECTION 2: ÉVOLUTION HISTORIQUE -->
+        <section id="evolution" class="scroll-mt-28">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="w-8 h-1 bg-cyan-500 rounded-full"></span>
+                <span class="text-cyan-400 font-semibold tracking-wider text-sm uppercase">Section 02</span>
+            </div>
+            <h2 class="font-heading text-3xl sm:text-4xl font-bold mb-3">2. L'Évolution : Du Mode de Chasse au Sport Moderne</h2>
+            <p class="text-gray-400 mb-10 max-w-2xl">Cliquez sur chaque étape chronologique pour découvrir comment l'être humain a transformé la survie en discipline sportive.</p>
+
+            <!-- Timeline Grid / Click Cards -->
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Step 1 -->
+                <div class="glass-card rounded-3xl p-6 cursor-pointer group relative overflow-hidden transition" onclick="toggleTimeline('step1')">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold">Préhistoire</span>
+                        <i class="fa-solid fa-person-hunting text-2xl text-amber-400 group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Chasse & Survie</h3>
+                    <p class="text-xs text-gray-400 mb-4">La course à pied pour poursuivre le gibier, le lancer de javelot pour chasser, et la natation pour traverser les fleuves.</p>
+                    
+                    <div class="text-brand-400 text-xs font-semibold flex items-center gap-2">
+                        <span>Découvrir l'explication</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </div>
+
+                    <div id="step1" class="reveal-content mt-4 pt-4 border-t border-white/10 text-xs text-gray-300 space-y-2">
+                        <p><strong>L'Endurance Traqueuse :</strong> L'homme préhistorique pratiquait la chasse à l'épuisement. La capacité de suer et de courir sur de longues distances était la clé ultime de sa survie.</p>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="glass-card rounded-3xl p-6 cursor-pointer group relative overflow-hidden transition" onclick="toggleTimeline('step2')">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-bold">Antiquité & Grèce</span>
+                        <i class="fa-solid fa-landmark text-2xl text-cyan-400 group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Jeux Olympiques Antiques</h3>
+                    <p class="text-xs text-gray-400 mb-4">En 776 av. J.-C. à Olympe, les compétences guerrières (lutte, course, char) deviennent des spectacles sacrés.</p>
+                    
+                    <div class="text-brand-400 text-xs font-semibold flex items-center gap-2">
+                        <span>Découvrir l'explication</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </div>
+
+                    <div id="step2" class="reveal-content mt-4 pt-4 border-t border-white/10 text-xs text-gray-300 space-y-2">
+                        <p><strong>Sacralisation de l'Effort :</strong> Les Grecs ont inventé la Trêve Olympique. Le corps athlétique est célébré comme une œuvre d'art et un hommage aux dieux.</p>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="glass-card rounded-3xl p-6 cursor-pointer group relative overflow-hidden transition" onclick="toggleTimeline('step3')">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold">Ère Moderne</span>
+                        <i class="fa-solid fa-stopwatch text-2xl text-emerald-400 group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Institutionalisation & Science</h3>
+                    <p class="text-xs text-gray-400 mb-4">Rénovation des Jeux par Pierre de Coubertin (1896) et naissance du sport professionnel mondialisé.</p>
+                    
+                    <div class="text-brand-400 text-xs font-semibold flex items-center gap-2">
+                        <span>Découvrir l'explication</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </div>
+
+                    <div id="step3" class="reveal-content mt-4 pt-4 border-t border-white/10 text-xs text-gray-300 space-y-2">
+                        <p><strong>Science & Technologie :</strong> Le sport moderne intègre la biomécanique, la nutrition, le chronométrage au millième de seconde et la diffusion globale.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SECTION 3: TYPES DE SPORTS -->
+        <section id="types" class="scroll-mt-28">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="w-8 h-1 bg-indigo-500 rounded-full"></span>
+                <span class="text-indigo-400 font-semibold tracking-wider text-sm uppercase">Section 03</span>
+            </div>
+            <h2 class="font-heading text-3xl sm:text-4xl font-bold mb-6">3. Les Différents Types de Sports</h2>
+
+            <!-- Filter Buttons -->
+            <div class="flex flex-wrap gap-3 mb-8">
+                <button onclick="filterSports('all')" class="sport-filter-btn px-5 py-2.5 rounded-xl bg-brand-500 text-white text-xs font-bold transition shadow-lg">Tous</button>
+                <button onclick="filterSports('collectif')" class="sport-filter-btn px-5 py-2.5 rounded-xl glass-card text-gray-300 text-xs font-bold hover:text-white transition">Sports Collectifs</button>
+                <button onclick="filterSports('individuel')" class="sport-filter-btn px-5 py-2.5 rounded-xl glass-card text-gray-300 text-xs font-bold hover:text-white transition">Individuels</button>
+                <button onclick="filterSports('aquatique')" class="sport-filter-btn px-5 py-2.5 rounded-xl glass-card text-gray-300 text-xs font-bold hover:text-white transition">Aquatiques</button>
+                <button onclick="filterSports('endurance')" class="sport-filter-btn px-5 py-2.5 rounded-xl glass-card text-gray-300 text-xs font-bold hover:text-white transition">Endurance</button>
+            </div>
+
+            <!-- Sports Grid -->
+            <div id="sports-grid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1 -->
+                <div class="sport-card glass-card rounded-2xl p-6 border border-white/10" data-category="collectif">
+                    <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-people-group"></i></div>
+                    <h3 class="font-bold text-lg mb-2">Sports Collectifs</h3>
+                    <p class="text-xs text-gray-400 mb-3">Football, Basketball, Handball, Volley-ball.</p>
+                    <span class="text-[11px] px-2.5 py-1 rounded-md bg-white/5 text-gray-300">Esprit d'équipe & Stratégie</span>
+                </div>
+                <!-- Card 2 -->
+                <div class="sport-card glass-card rounded-2xl p-6 border border-white/10" data-category="individuel">
+                    <div class="w-12 h-12 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-person-running"></i></div>
+                    <h3 class="font-bold text-lg mb-2">Sports Individuels</h3>
+                    <p class="text-xs text-gray-400 mb-3">Athlétisme, Tennis, Gymnastique, Escalade.</p>
+                    <span class="text-[11px] px-2.5 py-1 rounded-md bg-white/5 text-gray-300">Autonomie & Dépassement</span>
+                </div>
+                <!-- Card 3 -->
+                <div class="sport-card glass-card rounded-2xl p-6 border border-brand-500/30 bg-brand-500/10" data-category="aquatique">
+                    <div class="w-12 h-12 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-water"></i></div>
+                    <h3 class="font-bold text-lg mb-2 text-cyan-300">Sports Aquatiques</h3>
+                    <p class="text-xs text-gray-300 mb-3">Natation, Water-polo, Plongeon, Surf.</p>
+                    <span class="text-[11px] px-2.5 py-1 rounded-md bg-brand-500/30 text-brand-200 font-semibold">Recommandation Majeure</span>
+                </div>
+                <!-- Card 4 -->
+                <div class="sport-card glass-card rounded-2xl p-6 border border-white/10" data-category="endurance">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-person-biking"></i></div>
+                    <h3 class="font-bold text-lg mb-2">Sports d'Endurance</h3>
+                    <p class="text-xs text-gray-400 mb-3">Cyclisme, Marathon, Triathlon, Ski de fond.</p>
+                    <span class="text-[11px] px-2.5 py-1 rounded-md bg-white/5 text-gray-300">Capacité Cardio-Vasculaire</span>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SECTION 4: LA NATATION - LE SPORT RECOMMANDÉ -->
+        <section id="natation" class="scroll-mt-28">
+            <div class="glass-panel rounded-3xl p-8 md:p-12 border-2 border-brand-500/40 relative overflow-hidden shadow-2xl">
+                <div class="glow-bg w-[300px] h-[300px] bg-cyan-500 -top-20 -right-20"></div>
+
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-1 bg-cyan-400 rounded-full"></span>
+                    <span class="text-cyan-400 font-semibold tracking-wider text-sm uppercase">Section 04 - Le Choix Idéal</span>
+                </div>
+
+                <h2 class="font-heading text-3xl sm:text-5xl font-extrabold mb-6 leading-tight">
+                    Pourquoi La Natation est le Sport <br>
+                    <span class="gradient-text">Le Plus Recommandé au Monde ?</span>
+                </h2>
+
+                <p class="text-gray-300 text-base sm:text-lg mb-8 max-w-3xl leading-relaxed">
+                    Grâce au principe d'Archimède, l'eau réduit de 90% le poids du corps. La natation permet un entraînement complet, symétrique et sans aucun impact traumatique sur les articulations.
+                </p>
+
+                <div class="grid sm:grid-cols-3 gap-6 my-8">
+                    <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+                        <div class="text-brand-400 text-2xl mb-2"><i class="fa-solid fa-bone"></i></div>
+                        <h4 class="font-bold text-white text-base mb-1">Protection Articulaire</h4>
+                        <p class="text-xs text-gray-400">Aucun choc contre le sol. Idéal pour la rééducation, les enfants et les séniors.</p>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+                        <div class="text-cyan-400 text-2xl mb-2"><i class="fa-solid fa-lungs"></i></div>
+                        <h4 class="font-bold text-white text-base mb-1">Capacité Pulmonaire</h4>
+                        <p class="text-xs text-gray-400">Renforce le diaphragme et améliore le contrôle respiratoire réflexe.</p>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+                        <div class="text-emerald-400 text-2xl mb-2"><i class="fa-solid fa-child"></i></div>
+                        <h4 class="font-bold text-white text-base mb-1">Tonus Intégral</h4>
+                        <p class="text-xs text-gray-400">Fait travailler simultanément haut et bas du corps avec résistance hydraulique.</p>
+                    </div>
+                </div>
+
+                <button onclick="toggleReveal('natation-details')" class="py-3.5 px-8 rounded-xl bg-gradient-to-r from-brand-500 to-cyanAccent text-white font-bold text-sm shadow-lg hover:opacity-90 transition flex items-center gap-3">
+                    <i class="fa-solid fa-magnifying-glass-plus"></i>
+                    <span>Afficher l'Analyse Physique Complète</span>
+                </button>
+
+                <div id="natation-details" class="reveal-content mt-6 p-6 rounded-2xl bg-slate-900/80 border border-white/10 text-xs sm:text-sm text-gray-300 leading-relaxed space-y-3">
+                    <p><strong>Densité & Résistance :</strong> L'eau est environ 800 fois plus dense que l'air. Tout mouvement aquatique demande un effort constant et progressif, sollicitant les muscles profonds de la sangle abdominale et de la colonne vertébrale.</p>
+                    <p><strong>Thermorégulation :</strong> L'eau aide à réguler la température corporelle, réduisant la fatigue thermique cardiaque pendant l'effort prolongé.</p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SECTION 5: EXPLICATION DE LA NATATION (4 NAGES) -->
+        <section id="technique" class="scroll-mt-28">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="w-8 h-1 bg-brand-400 rounded-full"></span>
+                <span class="text-brand-400 font-semibold tracking-wider text-sm uppercase">Section 05</span>
+            </div>
+            <h2 class="font-heading text-3xl sm:text-4xl font-bold mb-3">5. Explication Technique des 4 Nages</h2>
+            <p class="text-gray-400 mb-8">Sélectionnez une nage pour découvrir ses spécificités techniques et mécaniques.</p>
+
+            <!-- Swimming Strokes Interactive Tabs -->
+            <div class="glass-card rounded-3xl p-6 sm:p-8">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+                    <button onclick="switchNage('crawl')" id="tab-crawl" class="tab-btn active py-3 px-4 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bolt"></i> Crawl
+                    </button>
+                    <button onclick="switchNage('brasse')" id="tab-brasse" class="tab-btn py-3 px-4 rounded-xl glass-card font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 text-gray-300">
+                        <i class="fa-solid fa-water"></i> Brasse
+                    </button>
+                    <button onclick="switchNage('dos')" id="tab-dos" class="tab-btn py-3 px-4 rounded-xl glass-card font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 text-gray-300">
+                        <i class="fa-solid fa-arrows-up-down"></i> Dos CRAWLÉ
+                    </button>
+                    <button onclick="switchNage('papillon')" id="tab-papillon" class="tab-btn py-3 px-4 rounded-xl glass-card font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 text-gray-300">
+                        <i class="fa-solid fa-wind"></i> Papillon
+                    </button>
+                </div>
+
+                <!-- Tab Content Panel -->
+                <div id="nage-content" class="p-6 rounded-2xl bg-slate-900/60 border border-white/10 min-h-[220px] flex flex-col justify-center">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SECTION 6: BIENFAITS SUR LE CORPS HUMAIN -->
+        <section id="bienfaits" class="scroll-mt-28">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="w-8 h-1 bg-emerald-500 rounded-full"></span>
+                <span class="text-emerald-400 font-semibold tracking-wider text-sm uppercase">Section 06</span>
+            </div>
+            <h2 class="font-heading text-3xl sm:text-4xl font-bold mb-3">6. Les Bienfaits du Sport sur le Corps Humain</h2>
+            <p class="text-gray-400 mb-10">Cliquez sur les points stratégiques du corps pour explorer l'impact physiologique.</p>
+
+            <div class="grid lg:grid-cols-12 gap-8 items-center">
+                <!-- Visual Interactive Body Map -->
+                <div class="lg:col-span-5 glass-card rounded-3xl p-8 flex flex-col items-center justify-center relative min-h-[380px]">
+                    <div class="text-brand-400/20 text-[200px] absolute pointer-events-none">
+                        <i class="fa-solid fa-person"></i>
+                    </div>
+
+                    <!-- Clickable Target Nodes -->
+                    <div class="relative z-10 space-y-6 w-full max-w-xs">
+                        <button onclick="selectBodyPart('brain')" class="body-node active w-full p-3 rounded-xl glass-panel border border-cyan-400/50 flex items-center gap-3 text-left">
+                            <span class="w-8 h-8 rounded-full bg-cyan-500/30 text-cyan-300 flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-brain"></i></span>
+                            <div>
+                                <div class="font-bold text-xs text-white">Cerveau & Mental</div>
+                                <div class="text-[10px] text-gray-400">Endorphines & Plasticité</div>
+                            </div>
+                        </button>
+
+                        <button onclick="selectBodyPart('heart')" class="body-node w-full p-3 rounded-xl glass-panel border border-red-500/50 flex items-center gap-3 text-left">
+                            <span class="w-8 h-8 rounded-full bg-red-500/30 text-red-300 flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-heart-pulse"></i></span>
+                            <div>
+                                <div class="font-bold text-xs text-white">Cœur & Circulation</div>
+                                <div class="text-[10px] text-gray-400">Endurance & Tension Arterielle</div>
+                            </div>
+                        </button>
+
+                        <button onclick="selectBodyPart('muscles')" class="body-node w-full p-3 rounded-xl glass-panel border border-amber-500/50 flex items-center gap-3 text-left">
+                            <span class="w-8 h-8 rounded-full bg-amber-500/30 text-amber-300 flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-dumbbell"></i></span>
+                            <div>
+                                <div class="font-bold text-xs text-white">Muscles & Os</div>
+                                <div class="text-[10px] text-gray-400">Masse musculaire & Densité</div>
+                            </div>
+                        </button>
+
+                        <button onclick="selectBodyPart('metabolism')" class="body-node w-full p-3 rounded-xl glass-panel border border-emerald-500/50 flex items-center gap-3 text-left">
+                            <span class="w-8 h-8 rounded-full bg-emerald-500/30 text-emerald-300 flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-fire"></i></span>
+                            <div>
+                                <div class="font-bold text-xs text-white">Métabolisme & Longévité</div>
+                                <div class="text-[10px] text-gray-400">Régulation du Glucose & Poids</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Explanation Panel -->
+                <div class="lg:col-span-7 glass-panel rounded-3xl p-8 border border-white/10 min-h-[380px] flex flex-col justify-center">
+                    <div id="body-info-panel">
+                        <!-- Default Active Content -->
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xl"><i class="fa-solid fa-brain"></i></div>
+                            <h3 class="text-2xl font-bold">Effets sur le Cerveau & La Santé Mentale</h3>
+                        </div>
+                        <p class="text-gray-300 leading-relaxed text-sm mb-4">
+                            L'exercice physique libère de la dopamine, de la sérotonine et des endorphines (les hormones du bonheur). Il stimule la neurogenèse (création de nouveaux neurones dans l'hippocampe).
+                        </p>
+                        <ul class="space-y-2 text-xs text-gray-300">
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Réduction de 40% de l'anxiété et du stress.</li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Amélioration de la qualité du sommeil et de la concentration.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SECTION 7: LÉGENDES ET CHAMPIONS -->
+        <section id="champions" class="scroll-mt-28">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="w-8 h-1 bg-amber-500 rounded-full"></span>
+                <span class="text-amber-400 font-semibold tracking-wider text-sm uppercase">Section 07</span>
+            </div>
+            <h2 class="font-heading text-3xl sm:text-4xl font-bold mb-3">7. Les Légendes de la Natation Mondiale</h2>
+            <p class="text-gray-400 mb-8">Les athlètes hors normes qui ont marqué l'histoire olympique aquatique.</p>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Champion 1 -->
+                <div class="glass-card rounded-3xl p-6 relative overflow-hidden border border-amber-500/30">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-3xl"><i class="fa-solid fa-crown text-amber-400"></i></span>
+                        <span class="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold">USA</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-1">Michael Phelps</h3>
+                    <p class="text-xs text-amber-400 font-semibold mb-4">"Le Poisson Volant"</p>
+                    
+                    <div class="space-y-2 text-xs text-gray-300 border-t border-white/10 pt-4">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Medailles Olympiques :</span>
+                            <span class="font-bold text-white">28 (23 en Or)</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Spécialité :</span>
+                            <span class="font-bold text-white">Papillon & 4 Nages</span>
+                        </div>
+                        <p class="text-[11px] text-gray-400 pt-2 italic">L'athlète le plus titré de toute l'histoire des Jeux Olympiques modernes.</p>
+                    </div>
+                </div>
+
+                <!-- Champion 2 -->
+                <div class="glass-card rounded-3xl p-6 relative overflow-hidden border border-cyan-500/30">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-3xl"><i class="fa-solid fa-medal text-cyan-400"></i></span>
+                        <span class="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-bold">France</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-1">Léon Marchand</h3>
+                    <p class="text-xs text-cyan-400 font-semibold mb-4">Nouveau Roi des Bassins</p>
+                    
+                    <div class="space-y-2 text-xs text-gray-300 border-t border-white/10 pt-4">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">JO Paris 2024 :</span>
+                            <span class="font-bold text-white">4 Médailles d'Or</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Spécialité :</span>
+                            <span class="font-bold text-white">Brasse & 4 Nages</span>
+                        </div>
+                        <p class="text-[11px] text-gray-400 pt-2 italic">Détenteur du record du monde du 400m 4 nages (précédemment détenu par Phelps).</p>
+                    </div>
+                </div>
+
+                <!-- Champion 3 -->
+                <div class="glass-card rounded-3xl p-6 relative overflow-hidden border border-purple-500/30 sm:col-span-2 lg:col-span-1">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-3xl"><i class="fa-solid fa-award text-purple-400"></i></span>
+                        <span class="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold">USA</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-1">Katie Ledecky</h3>
+                    <p class="text-xs text-purple-400 font-semibold mb-4">Reine du Demi-Fond</p>
+                    
+                    <div class="space-y-2 text-xs text-gray-300 border-t border-white/10 pt-4">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Medailles Olympiques :</span>
+                            <span class="font-bold text-white">14 (9 en Or)</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Spécialité :</span>
+                            <span class="font-bold text-white">Nage Libre (800m & 1500m)</span>
+                        </div>
+                        <p class="text-[11px] text-gray-400 pt-2 italic">Dominatrice incontestée des épreuves de distance aquatique depuis plus d'une décennie.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SECTION 8: QUIZ INTERACTIF -->
+        <section id="quiz" class="scroll-mt-28">
+            <div class="glass-panel rounded-3xl p-6 sm:p-10 border-2 border-emerald-500/40 relative overflow-hidden shadow-2xl">
+                <div class="flex items-center justify-between mb-6 border-b border-white/10 pb-4">
+                    <div>
+                        <span class="text-emerald-400 font-semibold tracking-wider text-xs uppercase block">Testez vos Connaissances</span>
+                        <h2 class="font-heading text-2xl sm:text-3xl font-extrabold text-white">8. Quiz Interactif de Validation</h2>
+                    </div>
+                    <div id="quiz-score-badge" class="px-4 py-2 rounded-xl bg-emerald-500/20 text-emerald-300 font-bold text-sm">
+                        Score : <span id="current-score">0</span> / 4
+                    </div>
+                </div>
+
+                <!-- Quiz Questions Container -->
+                <div id="quiz-container" class="space-y-8">
+                    <!-- Q1 -->
+                    <div class="quiz-q-box space-y-3" data-correct="2">
+                        <p class="font-bold text-sm sm:text-base text-gray-100">1. Quel pourcentage du poids corporel est allégé dans l'eau grâce à la poussée d'Archimède ?</p>
+                        <div class="grid sm:grid-cols-3 gap-3">
+                            <button onclick="checkAnswer(this, 1)" class="quiz-opt p-3 rounded-xl glass-card text-xs font-semibold text-left hover:bg-white/10 transition">A) 50%</button>
+                            <button onclick="checkAnswer(this, 2)" class="quiz-opt p-3 rounded-xl glass-card text-xs font-semibold text-left hover:bg-white/10 transition">B) Environ 90%</button>
+                            <button onclick="checkAnswer(this, 3)" class="quiz-opt p-3 rounded-xl glass-card text-xs font-semibold text-left hover:bg-white/10 transition">C) 25%</button>
+                        </div>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="quiz-q-box space-y-3" data-correct="1">
+                        <p class="font-bold text-sm sm:text-base text-gray-100">2. Quelle est la nage reconnue comme étant la plus rapide ?</p>
+                        <div class="grid sm:grid-cols-3 gap-3">
+                            <button onclick="checkAnswer(this, 1)" class="quiz-opt p-3 rounded-xl glass-card text-xs font-semibold text-left hover:bg-white/10 transition">A) Le Crawl</button>
+                            <button onclick="checkAnswer(this, 2)" class="quiz-opt p-3 rounded-xl glass-card text-xs font-semibold text-left hover:bg-white/10 transition">B) La Brasse</button>
+                            <button onclick="checkAnswer(this, 3)" class="quiz-opt p-3 rounded-xl glass-card text-xs font-semibold text-left hover:bg-white/10 transition">C) Le Papillon</button>
+                        </div>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="quiz-q-box space-y-3" data-correct="3">
+                        <p class="font-bold text-sm sm:text-base text-gray-100">3. En quelle année les premiers Jeux Olympiques antiques ont-ils eu lieu ?</p>
+                        <div class="grid sm:grid-cols-3 gap-3">
+                            <button onclick="checkAnswer(this, 1)" class="quiz-opt p-3 rounded-xl glass-card text-xs font-semibold text-left hover:bg-white/10 transition">A) 1896 apr. J.-C.</button>
+                            <button onclick="checkAnswer(this, 2)" class="quiz-opt p-3 rounded-xl glass-card text-xs font-semibold text-left hover:bg-white/10 transition">B) 100 av. J.-C.</button>
+                            <button onclick="checkAnswer(this, 3)" class="quiz-opt p-3 rounded-xl glass-card text-xs font-semibold text-left hover:bg-white/10 transition">C) 776 av. J.-C.</button>
+                        </div>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div class="quiz-q-box space-y-3" data-correct="2">
+                        <p class="font-bold text-sm sm:text-base text-gray-100">4. Quel athlète est le nageur le plus titré de l'histoire des JO avec 28 médailles ?</p>
+                        <div class="grid sm:grid-cols-3 gap-3">
+                            <button onclick="checkAnswer(this, 1)" class="quiz-opt p-3 rounded-xl glass-card text-xs font-semibold text-left hover:bg-white/10 transition">A) Léon Marchand</button>
+                            <button onclick="checkAnswer(this, 2)" class="quiz-opt p-3 rounded-xl glass-card text-xs font-semibold text-left hover:bg-white/10 transition">B) Michael Phelps</button>
+                            <button onclick="checkAnswer(this, 3)" class="quiz-opt p-3 rounded-xl glass-card text-xs font-semibold text-left hover:bg-white/10 transition">C) Caeleb Dressel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quiz Completion Banner -->
+                <div id="quiz-result" class="hidden mt-8 p-6 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-center space-y-3">
+                    <h3 class="text-2xl font-bold text-emerald-300">Félicitations ! 🎉</h3>
+                    <p class="text-sm text-gray-200" id="quiz-final-text">Vous avez complété l'évaluation avec succès.</p>
+                    <button onclick="resetQuiz()" class="py-2.5 px-6 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs transition">
+                        Recommencer le Quiz
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER WITH SIGNATURE -->
+    <footer class="relative z-10 border-t border-white/10 bg-slate-950/80 py-12 text-center text-gray-400 text-sm">
+        <div class="max-w-6xl mx-auto px-4 space-y-4">
+            <div class="flex justify-center items-center gap-2 text-brand-400 font-bold text-lg">
+                <i class="fa-solid fa-person-swimming"></i>
+                <span>Exposé Académique & Scientifique</span>
+            </div>
+            
+            <p class="text-gray-300">
+                Thème : La Science du Sport & La Natation
+            </p>
+
+            <div class="inline-block px-6 py-3 rounded-2xl glass-card border border-brand-500/40 my-4">
+                <p class="text-xs sm:text-sm text-gray-300">
+                    Présenté & Réalisé par : <strong class="text-brand-300 font-extrabold text-base ml-1">Kawter Mesnouni</strong>
+                </p>
+            </div>
+
+            <p class="text-xs text-gray-500">
+                © Tous droits réservés. Design interactif réalisé pour présentation scolaire/universitaire.
+            </p>
+        </div>
+    </footer>
+
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Generate Floating Water Bubbles
+        function createBubbles() {
+            const container = document.getElementById('bubble-container');
+            for (let i = 0; i < 15; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                const size = Math.random() * 40 + 10;
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                bubble.style.left = `${Math.random() * 100}%`;
+                bubble.style.animationDelay = `${Math.random() * 10}s`;
+                bubble.style.animationDuration = `${Math.random() * 8 + 8}s`;
+                container.appendChild(bubble);
+            }
+        }
+        createBubbles();
+
+        // Toggle Reveal Elements
+        function toggleReveal(id) {
+            const element = document.getElementById(id);
+            element.classList.toggle('open');
+            const icon = document.getElementById(id + '-icon');
+            if (icon) {
+                icon.classList.toggle('rotate-180');
+            }
+        }
+
+        // Toggle Timeline Steps
+        function toggleTimeline(stepId) {
+            const el = document.getElementById(stepId);
+            el.classList.toggle('open');
+        }
+
+        // Mobile Menu Toggle
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        mobileBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // Filter Sports Grid
+        function filterSports(category) {
+            const cards = document.querySelectorAll('.sport-card');
+            const buttons = document.querySelectorAll('.sport-filter-btn');
+
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-brand-500', 'text-white');
+                btn.classList.add('glass-card', 'text-gray-300');
+            });
+            event.target.classList.add('bg-brand-500', 'text-white');
+            event.target.classList.remove('glass-card', 'text-gray-300');
+
+            cards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Swimming Strokes Data
+        const nagesData = {
+            crawl: {
+                title: "Le Crawl (Nage Libre)",
+                badge: "Plus Rapide",
+                desc: "Nage ventrale asynchrone caractérisée par une traction continue des bras et un battement ininterrompu des jambes.",
+                points: ["Vitesse maximale sous l'eau.", "Respiration latérale rythmée.", "Sollicite intensément le grand dorsal et les triceps."]
+            },
+            brasse: {
+                title: "La Brasse",
+                badge: "Plus Technique",
+                desc: "Nage symétrique ventrale avec mouvement circulaire simultané des bras et ciseau des jambes.",
+                points: ["Nage la plus ancienne historiquement.", "Demande une parfaite coordination motrice.", "Forte sollicitation des adducteurs et des quadriceps."]
+            },
+            dos: {
+                title: "Le Dos Crawlé",
+                badge: "Postural & Dorsal",
+                desc: "Seule nage effectuée sur le dos. Permet une respiration libre et continue pendant tout le parcours.",
+                points: ["Excellente pour corriger la posture de la colonne.", "Ouvre la cage thoracique.", "Recommandée par les kinésithérapeutes."]
+            },
+            papillon: {
+                title: "Le Papillon",
+                badge: "Plus Athlétique",
+                desc: "Nage spectaculaire basée sur une ondulation simultanée du corps initiée par la tête et le buste.",
+                points: ["Dépense calorique la plus élevée.", "Nécessite une grande puissance de la sangle abdominale.", "Exige une grande souplesse épaules/bassin."]
+            }
+        };
+
+        function switchNage(key) {
+            const data = nagesData[key];
+            const contentBox = document.getElementById('nage-content');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('tab-' + key).classList.add('active');
+
+            contentBox.innerHTML = `
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-xl font-bold text-white">${data.title}</h3>
+                    <span class="px-3 py-1 rounded-full bg-brand-500/20 text-brand-300 text-xs font-bold">${data.badge}</span>
+                </div>
+                <p class="text-gray-300 text-xs sm:text-sm mb-4 leading-relaxed">${data.desc}</p>
+                <div class="space-y-2">
+                    ${data.points.map(pt => `<div class="flex items-center gap-2 text-xs text-brand-200"><i class="fa-solid fa-check-circle text-brand-400"></i> ${pt}</div>`).join('')}
+                </div>
+            `;
+        }
+        // Initialize default swim tab
+        switchNage('crawl');
+
+        // Body Interactive Node Map
+        const bodyData = {
+            brain: {
+                title: "Effets sur le Cerveau & La Santé Mentale",
+                icon: "fa-brain",
+                color: "text-cyan-400",
+                text: "L'exercice physique stimule la sécrétion d'endorphines, de dopamine et de BDNF (Facteur neurotrophique issu du cerveau).",
+                bullets: ["Améliore la mémoire et la concentration.", "Diminue les symptômes d'anxiété et de dépression.", "Favorise un sommeil profond et réparateur."]
+            },
+            heart: {
+                title: "Système Cardiovasculaire",
+                icon: "fa-heart-pulse",
+                color: "text-red-400",
+                text: "Le cœur est un muscle. Le sport augmente le volume d'éjection systolique et abaisse le pouls au repos.",
+                bullets: ["Réduit le risque de maladies coronariennes de 30%.", "Régule la pression artérielle.", "Améliore la circulation sanguine périphérique."]
+            },
+            muscles: {
+                title: "Muscles, Os & Articulations",
+                icon: "fa-dumbbell",
+                color: "text-amber-400",
+                text: "L'activité physique augmente la masse musculaire et renforce la densité minérale osseuse.",
+                bullets: ["Prévient l'ostéoporose et le vieillissement cellulaire.", "Renforce les tendons et ligaments.", "Améliore la posture et l'équilibre."]
+            },
+            metabolism: {
+                title: "Métabolisme & Longévité",
+                icon: "fa-fire",
+                color: "text-emerald-400",
+                text: "Le sport optimise la sensibilité à l'insuline et favorise l'utilisation des graisses comme carburant.",
+                bullets: ["Aide au maintien d'un poids de forme sain.", "Réduit les risques de diabète de type 2.", "Augmente l'espérance de vie en bonne santé."]
+            }
+        };
+
+        function selectBodyPart(key) {
+            const data = bodyData[key];
+            const panel = document.getElementById('body-info-panel');
+
+            document.querySelectorAll('.body-node').forEach(node => node.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            panel.innerHTML = `
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-white/10 ${data.color} flex items-center justify-center text-xl"><i class="fa-solid ${data.icon}"></i></div>
+                    <h3 class="text-2xl font-bold">${data.title}</h3>
+                </div>
+                <p class="text-gray-300 leading-relaxed text-sm mb-4">${data.text}</p>
+                <ul class="space-y-2 text-xs text-gray-300">
+                    ${data.bullets.map(b => `<li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> ${b}</li>`).join('')}
+                </ul>
+            `;
+        }
+
+        // Quiz State Logic
+        let currentScore = 0;
+        let answeredQuestions = 0;
+
+        function checkAnswer(btn, optionIndex) {
+            const questionBox = btn.closest('.quiz-q-box');
+            if (questionBox.dataset.answered) return;
+
+            questionBox.dataset.answered = "true";
+            const correctOption = parseInt(questionBox.dataset.correct);
+            const allOpts = questionBox.querySelectorAll('.quiz-opt');
+
+            allOpts.forEach(opt => opt.classList.add('opacity-50', 'cursor-not-allowed'));
+
+            if (optionIndex === correctOption) {
+                btn.classList.remove('glass-card', 'opacity-50');
+                btn.classList.add('bg-emerald-500/30', 'border-emerald-500', 'text-emerald-200', 'font-bold');
+                currentScore++;
+                document.getElementById('current-score').innerText = currentScore;
+            } else {
+                btn.classList.remove('glass-card', 'opacity-50');
+                btn.classList.add('bg-red-500/30', 'border-red-500', 'text-red-200');
+                
+                // Highlight correct one
+                allOpts[correctOption - 1].classList.remove('opacity-50');
+                allOpts[correctOption - 1].classList.add('bg-emerald-500/20', 'border-emerald-500/50', 'text-emerald-300');
+            }
+
+            answeredQuestions++;
+
+            if (answeredQuestions === 4) {
+                const resultBox = document.getElementById('quiz-result');
+                const resultText = document.getElementById('quiz-final-text');
+                resultBox.classList.remove('hidden');
+
+                if (currentScore >= 3) {
+                    resultText.innerHTML = `Bravo ! Vous avez obtenu <strong>${currentScore}/4</strong>. Excellente maîtrise du sujet !`;
+                    confetti({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    });
+                } else {
+                    resultText.innerHTML = `Vous avez obtenu <strong>${currentScore}/4</strong>. Rebranchez vos lunettes de natation et relisez l'exposé !`;
+                }
+            }
+        }
+
+        function resetQuiz() {
+            currentScore = 0;
+            answeredQuestions = 0;
+            document.getElementById('current-score').innerText = '0';
+            document.getElementById('quiz-result').classList.add('hidden');
+
+            const qBoxes = document.querySelectorAll('.quiz-q-box');
+            qBoxes.forEach(box => {
+                delete box.dataset.answered;
+                const opts = box.querySelectorAll('.quiz-opt');
+                opts.forEach(opt => {
+                    opt.className = 'quiz-opt p-3 rounded-xl glass-card text-xs font-semibold text-left hover:bg-white/10 transition';
+                });
+            });
+        }
+    </script>
+</body>
+</html>
